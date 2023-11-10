@@ -28,7 +28,7 @@ public class LinkService {
         return new ResponseEntity<>("Link successfully created!", HttpStatus.CREATED);
     }
     @Transactional
-    public ResponseEntity<?> patchLink(Long linkId, Long userId, LinkRequest patchLink) {
+    public ResponseEntity<?> patchLink(Long linkId, LinkRequest patchLink) {
         var link = linkRepository.findById(linkId).orElse(null);
         if (link == null) {
             return new ResponseEntity<>("Link not found!", HttpStatus.NOT_FOUND);

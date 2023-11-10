@@ -2,7 +2,6 @@ package com.shimada.linksv4.security;
 
 
 import com.shimada.linksv4.models.Role;
-import com.shimada.linksv4.web.services.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -19,13 +17,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.jsonwebtoken.Jwts.*;
+
 @Service
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final UserDetailsService userDetailsService;
-    private final UserService userService;
+    private final UserDetailsServiceImpl userDetailsService;
     private Key key;
 
     @PostConstruct
@@ -55,33 +54,19 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
-        var claims = Jwts
-                .parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
-        System.out.println(!claims.getExpiration().before(new Date()));
         return !claims.getExpiration().before(new Date());
     }
 
-    private String getId(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJwt(token)
-                .getBody()
-                .get("id")
-                .toString();
-    }
-
     private String getUsername(String token) {
-        return Jwts
-                .parserBuilder()
+        return parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
@@ -89,7 +74,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         String username = getUsername(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
 

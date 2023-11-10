@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +43,7 @@ class LinkServiceTest {
         LinkRequest linkRequest = new LinkRequest("youtube.com", "youtube");
         var response = linkService.createLink(linkRequest, 1L);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
         verify(userRepository).findById(1L);
     }
 
@@ -60,7 +62,7 @@ class LinkServiceTest {
 
         var response = linkService.removeLink(1L, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
+        assertNotNull(response.getBody());
         verify(userRepository).findById(1L);
         verify(linkRepository).findById(1L);
     }
@@ -78,9 +80,9 @@ class LinkServiceTest {
 
         LinkRequest linkRequest = new LinkRequest("youtube1.com", "youtube1");
 
-        var response = linkService.patchLink(1L, 1L, linkRequest);
+        var response = linkService.patchLink(1L, linkRequest);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
+        assertNotNull(response.getBody());
         verify(linkRepository).findById(1L);
     }
 }

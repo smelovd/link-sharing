@@ -35,6 +35,7 @@ class UserServiceTest {
 
         var response = userService.getUser("username");
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         verify(userRepository).findUserByUsername("username");
     }
 
@@ -47,6 +48,7 @@ class UserServiceTest {
 
         var response = userService.getQR("username");
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         verify(userRepository).findUserByUsername("username");
     }
 }
