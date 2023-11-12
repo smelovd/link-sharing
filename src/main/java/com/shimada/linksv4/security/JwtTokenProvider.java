@@ -2,6 +2,7 @@ package com.shimada.linksv4.security;
 
 
 import com.shimada.linksv4.models.Role;
+import com.shimada.linksv4.models.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -78,4 +79,17 @@ public class JwtTokenProvider {
     }
 
 
+    public String createAccessToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put("id", user.getId());
+        claims.put("roles", resolveRoles(user.getRoles()));
+        Date now = new Date();
+        Date validate = new Date(now.getTime() + jwtProperties.getAccess());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validate)
+                .signWith(key)
+                .compact();
+    }
 }

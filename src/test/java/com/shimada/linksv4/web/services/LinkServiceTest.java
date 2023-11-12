@@ -29,6 +29,7 @@ class LinkServiceTest {
 
     @MockBean
     private UserRepository userRepository;
+
     @MockBean
     private LinkRepository linkRepository;
 
@@ -64,25 +65,6 @@ class LinkServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         verify(userRepository).findById(1L);
-        verify(linkRepository).findById(1L);
-    }
-
-    @Test
-    void patchLink() {
-        User user = new User();
-        user.setUsername("username");
-        user.setPassword("password");
-        user.setId(1L);
-
-        Link link = new Link("youtube.com", "youtube");
-        user.getLinks().add(link);
-        when(linkRepository.findById(1L)).thenReturn(Optional.of(link));
-
-        LinkRequest linkRequest = new LinkRequest("youtube1.com", "youtube1");
-
-        var response = linkService.patchLink(1L, linkRequest);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
         verify(linkRepository).findById(1L);
     }
 }

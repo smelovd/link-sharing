@@ -13,12 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.security.auth.login.CredentialException;
 
 import static com.shimada.linksv4.models.ERole.ROLE_USER;
 
@@ -33,47 +34,51 @@ public class AuthService {
     private final RoleRepository roleRepository;
 
     @Transactional
-    public ResponseEntity<?> register(Register register) {
-        if (userRepository.findUserByEmail(register.getEmail()).isPresent()) {
-            return new ResponseEntity<>("Email already in use", HttpStatus.BAD_REQUEST);
-        }
-
-        if (userRepository.findUserByUsername(register.getUsername()).isPresent()) {
-            return new ResponseEntity<>("Username already in use", HttpStatus.BAD_REQUEST);
-        }
-        Set<Role> roles = new HashSet<>();
-        var role = roleRepository.findByRole(ROLE_USER).orElse(null);
-        if (role == null) {
-            roleRepository.save(new Role(ROLE_USER));
-            role = roleRepository.findById(1L).orElse(null);
-            if (role == null) System.out.println("role is null, check endpoint /register");
-        }
-        roles.add(role);
-        User user = new User(
-                register.getEmail(),
-                register.getUsername(),
-                passwordEncoder.encode(register.getPassword()),
-                roles
-        );
+    public ResponseEntity<?> register(Register register) throws CredentialException {
+        validateUsernameAndEmail(register.getUsername(), register.getEmail());
+        User user = new User(register, passwordEncoder.encode(register.getPassword()));
+        user.getRoles().add(roleRepository.findById(1L).orElse(new Role(ROLE_USER)));
         userRepository.save(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @Transactional
-    public ResponseEntity<?> login(Login login) {
-        User user = userRepository.findUserByUsername(login.getUsername())
-                .orElse(null);
-        if (user == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        JwtResponse jwtResponse = new JwtResponse();
-        authentication.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        login.getUsername(), login.getPassword()
-                ));
-        jwtResponse.setId(user.getId());
-        jwtResponse.setUsername(user.getUsername());
-        jwtResponse.setAccessToken(jwtTokenProvider.createAccessToken(
-                user.getId(), user.getUsername(), user.getRoles()
-        ));
+    public void validateUsernameAndEmail(String username, String email) throws CredentialException, AuthenticationException {
+        if (userRepository.existsUserByEmail(email)) {
+            throw new CredentialException("email already use!");
+        }
+        if (userRepository.existsUserByUsername(username)) {
+            throw new CredentialException("username already use!");
+        }
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> login(Login login) throws UsernameNotFoundException {
+        User user = findUserByUsername(login.getUsername());
+
+        authentication.authenticate(new UsernamePasswordAuthenticationToken(
+                login.getUsername(), login.getPassword()));
+
+        JwtResponse jwtResponse = new JwtResponse(user, jwtTokenProvider.createAccessToken(user));
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);
+    }
+
+    @Transactional
+    public User findUserByUsername(String username) {
+        var user = userRepository.findUserByUsername(username);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("User not found!");
+        }
+        return user.get();
+    }
+
+    @Transactional
+    public User findById(Long id) {
+        var user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("User not found!");
+        }
+        return user.get();
     }
 }

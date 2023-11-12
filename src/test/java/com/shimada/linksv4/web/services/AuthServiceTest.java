@@ -9,9 +9,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.security.auth.login.CredentialException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,14 +31,14 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Test
-    void register() {
+    void register() throws CredentialException {
         Register user = new Register();
         var statusCode = authService.register(user).getStatusCode();
         assertEquals(HttpStatus.CREATED, statusCode);
     }
 
     @Test
-    void login() {
+    void login() throws CredentialException, ChangeSetPersister.NotFoundException {
         User user = new User();
         user.setUsername("username");
         user.setPassword("password");
