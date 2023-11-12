@@ -1,3 +1,19 @@
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+Content-Length: 54
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8.1)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "username": "username",
+  "password": "password"
+}
+
+<> 2023-11-12T181531.200.json
+
+###
+
 DELETE http://localhost:8080/api/link/2/1102
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlkIjoyLCJyb2xlcyI6WyJSb2xlKGlkPTEsIHJvbGU9Uk9MRV9VU0VSKSJdLCJpYXQiOjE2OTk3NTMwMjgsImV4cCI6MTcwMDExMzAyOH0.miooduLpKM6cq_iw0mucbs0gJ2eBn1AOO8uZ_jEhZfpUdgNIH7ARTM2fEYOCbjQ6
 Connection: Keep-Alive
@@ -714,23 +730,6 @@ Accept-Encoding: br,deflate,gzip,x-gzip
 }
 
 <> 2023-11-12T034804.400.txt
-
-###
-
-PATCH http://localhost:8080/api/link/2/950
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VybmFtZSIsImlkIjoyLCJyb2xlcyI6WyJSb2xlKGlkPTEsIHJvbGU9Uk9MRV9VU0VSKSJdLCJpYXQiOjE2OTk3NTMwMjgsImV4cCI6MTcwMDExMzAyOH0.miooduLpKM6cq_iw0mucbs0gJ2eBn1AOO8uZ_jEhZfpUdgNIH7ARTM2fEYOCbjQ6
-Content-Length: 33
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8.1)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-{
-  "name": "1",
-  "url": "1.2"
-}
-
-<> 2023-11-12T034748.400.txt
 
 ###
 

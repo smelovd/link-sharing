@@ -17,11 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 public class User {
+
     @Id
     @GeneratedValue
     private Long id;
     private String email;
     private String username;
+
     @JsonIgnore
     private String password;
 

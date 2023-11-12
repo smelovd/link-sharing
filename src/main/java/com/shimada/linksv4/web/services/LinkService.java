@@ -18,7 +18,6 @@ public class LinkService {
     private final LinkRepository linkRepository;
     private final AuthService authService;
 
-    @Transactional
     public ResponseEntity<?> createLink(LinkRequest createLink, Long userId) {
         User user = authService.findById(userId);
         Link link = new Link(createLink.getUrl(), createLink.getName());
@@ -35,7 +34,6 @@ public class LinkService {
         return new ResponseEntity<>("Link successfully deleted!", HttpStatus.OK);
     }
 
-    @Transactional
     public Link findById(Long id) {
         var link = linkRepository.findById(id);
         if (link.isEmpty()) {

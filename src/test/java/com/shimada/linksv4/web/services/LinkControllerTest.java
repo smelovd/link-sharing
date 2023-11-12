@@ -3,6 +3,7 @@ package com.shimada.linksv4.web.services;
 import com.shimada.linksv4.models.Link;
 import com.shimada.linksv4.models.User;
 import com.shimada.linksv4.requests.link.LinkRequest;
+import com.shimada.linksv4.web.controllers.LinkController;
 import com.shimada.linksv4.web.repository.LinkRepository;
 import com.shimada.linksv4.web.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,10 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class LinkServiceTest {
+class LinkControllerTest {
 
     @Autowired
-    private LinkService linkService;
+    private LinkController linkController;
 
     @MockBean
     private UserRepository userRepository;
@@ -42,7 +43,7 @@ class LinkServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         LinkRequest linkRequest = new LinkRequest("youtube.com", "youtube");
-        var response = linkService.createLink(linkRequest, 1L);
+        var response = linkController.createLink(linkRequest, 1L);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         verify(userRepository).findById(1L);
@@ -60,8 +61,7 @@ class LinkServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(linkRepository.findById(1L)).thenReturn(Optional.of(link));
 
-
-        var response = linkService.removeLink(1L, 1L);
+        var response = linkController.removeLink(1L, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         verify(userRepository).findById(1L);

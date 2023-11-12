@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Link {
+
     @Id
     @GeneratedValue
     private Long id;
